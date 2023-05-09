@@ -13,7 +13,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     SiteUserRepository siteUserRepository;
 
     @Override
-    public UserDetails loadUserByUserName(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return (UserDetails) siteUserRepository.findByUsername(username);
     }
 }
