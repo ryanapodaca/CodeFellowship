@@ -35,7 +35,7 @@ public class SiteUser implements UserDetails {
         this.dateCreated = dateCreated;
     }
 
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
