@@ -2,6 +2,7 @@ package com.auth.auth.controllers;
 
 import com.auth.auth.models.SiteUser;
 import com.auth.auth.repos.SiteUserRepository;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,9 +41,9 @@ public class SiteUserController {
     }
 
     //Make a dummy login page
-    @GetMapping()
+    @GetMapping("/login")
     public String getLoginPage() {
-        return "/login.html";
+        return "login.html";
     }
 
     @GetMapping("/signup")

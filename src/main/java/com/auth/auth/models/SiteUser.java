@@ -11,46 +11,89 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 @Entity
-public class SiteUser extends UserDetails {
+public class SiteUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    private String UserName;
+    String username;
     private String password;
+    String firstName;
+    String lastName;
+    String dateOfBirth;
+    String bio;
     LocalDate dateCreated;
 
     public SiteUser() {}
 
-    public SiteUser(String userName, String password, LocalDate dateCreated) {
-        UserName = userName;
+    public SiteUser(String username, String password, String firstName, String lastName, String dateOfBirth, String bio, LocalDate dateCreated) {
+        this.username = username;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.bio = bio;
         this.dateCreated = dateCreated;
     }
 
     public String getUserName() {
-        return UserName;
+        return username;
     }
 
     public void setUserName(String userName) {
-        UserName = userName;
+        username = userName;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
         return null;
     }
 
@@ -74,3 +117,5 @@ public class SiteUser extends UserDetails {
         return true;
     }
 }
+
+
