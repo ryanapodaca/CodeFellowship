@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @Controller
 public class SiteUserController {
@@ -59,16 +60,18 @@ public class SiteUserController {
 
     @PostMapping("/signup")
     public RedirectView createUser(String username, String password) {
+
         SiteUser newUser = new SiteUser();
         newUser.setUsername(username);
         String encryptedPassword = passwordEncoder.encode(password);
+
         newUser.setPassword(encryptedPassword);
+        newUser.setDateCreated(LocalDate.now());
 
         siteUserRepository.save(newUser);
         authWithHttpServletRequest(username, password);
 
         return new RedirectView("/");
-
     }
 
     public void authWithHttpServletRequest (String username, String password) {
