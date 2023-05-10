@@ -1,14 +1,12 @@
 package com.auth.auth.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 public class SiteUser implements UserDetails {
@@ -22,6 +20,8 @@ public class SiteUser implements UserDetails {
     String dateOfBirth;
     String bio;
     LocalDate dateCreated;
+    @OneToMany(mappedBy = "siteUser")
+    List<Post> posts;
 
     public SiteUser() {}
 
@@ -35,11 +35,15 @@ public class SiteUser implements UserDetails {
         this.dateCreated = dateCreated;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUserName(String userName) {
+    public void setUsername(String userName) {
         username = userName;
     }
 
