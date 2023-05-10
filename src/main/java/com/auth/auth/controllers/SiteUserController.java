@@ -10,10 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -56,6 +53,10 @@ public class SiteUserController {
         return "signup.html";
     }
 
+
+    @GetMapping("/myprofile")
+    public String getMyProfile() { return "my-profile.html"; }
+
     @PostMapping("/signup")
     public RedirectView createUser(String username, String password) {
         SiteUser newUser = new SiteUser();
@@ -77,7 +78,6 @@ public class SiteUserController {
             System.out.println("Error while logging in");
             e.printStackTrace();
         }
-
     }
 
     @GetMapping("/test")
@@ -126,5 +126,23 @@ public class SiteUserController {
         }
 
         return new RedirectView("/user/"+id);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public RedirectView deleteUser(@PathVariable Long id, Principal p, RedirectAttributes redir) {
+
+        SiteUser userToDelete = siteUserRepository.findById(id).orElseThrow();
+
+        if (p != null && p.getName().equals(userToDelete.getUsername()))
+        {
+            siteUserRepository.deleteById(id);
+            p = null;
+        }
+        else
+        {
+            redir.addFlashAttribute("errorMessage", "Cannot delete other user's accounts.");
+            return new RedirectView("/user" + id);
+        }
+        return new RedirectView("/");
     }
 }
