@@ -5,11 +5,16 @@ import com.auth.auth.repos.SiteUserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
@@ -54,7 +59,7 @@ public class SiteUserController {
     @PostMapping("/signup")
     public RedirectView createUser(String username, String password) {
         SiteUser newUser = new SiteUser();
-        newUser.setUserName(username);
+        newUser.setUsername(username);
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setPassword(encryptedPassword);
 
@@ -73,5 +78,53 @@ public class SiteUserController {
             e.printStackTrace();
         }
 
+    }
+
+    @GetMapping("/test")
+    public String getTestPage(Model m, Principal p) {
+        if (p != null){
+            String username = p.getName();
+            SiteUser user = siteUserRepository.findByUsername(username);
+
+            if(user != null)
+                m.addAttribute("username", user.getUsername());
+        }
+        return "test.html";
+    }
+
+    @GetMapping("/user/{id}")
+    public String getUserInfoPage(Model m, Principal p, @PathVariable long id) {
+        if (p != null) {
+            String username = p.getName();
+            SiteUser browsingUser = siteUserRepository.findByUsername(username);
+            m.addAttribute("username", browsingUser.getUsername());
+        }
+
+        SiteUser profileUser = siteUserRepository.findById(id).orElseThrow();
+        m.addAttribute("profileUsername", profileUser.getUsername());
+        m.addAttribute("profileId",profileUser.getId());
+        m.addAttribute("profileDateCreated", profileUser.getDateCreated());
+
+        return "user-info.html";
+    }
+
+    @PutMapping("/user/{id}")
+    public RedirectView updateUserInfo(Model m, Principal p, @PathVariable Long id, String profileUsername,
+                                       RedirectAttributes redir) {
+        SiteUser userToBeEdited = siteUserRepository.findById(id).orElseThrow();
+
+        if(p != null && p.getName().equals(userToBeEdited.getUsername())) {
+            userToBeEdited.setUsername(profileUsername);
+            siteUserRepository.save(userToBeEdited);
+
+            // include lines below if your principal is not updating
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userToBeEdited, userToBeEdited.getPassword(),
+                    userToBeEdited.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            redir.addFlashAttribute("errorMessage", "Can not edit another user's page!");
+        }
+
+        return new RedirectView("/user/"+id);
     }
 }

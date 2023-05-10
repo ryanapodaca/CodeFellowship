@@ -35,11 +35,15 @@ public class SiteUser implements UserDetails {
         this.dateCreated = dateCreated;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUserName(String userName) {
+    public void setUsername(String userName) {
         username = userName;
     }
 
