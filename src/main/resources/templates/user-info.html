@@ -6,24 +6,34 @@
     <link rel="stylesheet" type="text/css" href="">
 </head>
 <body>
+
 <h3 th:if="${username != null}" th:text="${'Current browsing user: ' + username}"></h3>
 <div th:replace="/fragments/error-fragment :: siteUser-error"></div>
 <h1 th:text="${'User info for user id: ' + profileId}"></h1>
+<div th:text="${'Profile Name: ' + firstName + ' ' + lastName}"></div>
 
 <form th:action="${'/user/' + profileId}" th:method="PUT">
     <label for="profileUsername">Username</label>
     <input th:value="${profileUsername}" type="text" name="profileUsername" id="profileUsername" th:disabled="${!username.equals(profileUsername)}">
     <input type="submit" value="edit user info">
-
 </form>
+
+
+
 <label for="profileId">Id</label>
 <div th:text="${profileId}" type="text" name="profileId" id="profileId"></div>
 <label for="profileDateCreated">Date Created</label>
 <div th:text="${#temporals.format(profileDateCreated, 'MM-dd-yyyy')}" type="text" name="profileDateCreated" id="profileDateCreated"></div>
+<!--TODO:Add picture-->
+
 
 
 <form th:action="${'/user/' + profileId}" th:method="DELETE">
     <input th:if="${username.equals(profileUsername)}" type="submit" value="DELETE USER">
+</form>
+
+<form th:action="${'/follow-user/' + profileId}" th:method="PUT">
+    <input th:if="${!username.equals(profileUsername)}" type="submit" value="FOLLOW USER">
 </form>
 </body>
 </html>
