@@ -5,8 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class SiteUser implements UserDetails {
@@ -23,6 +22,27 @@ public class SiteUser implements UserDetails {
     @OneToMany(mappedBy = "siteUser")
     List<Post> posts;
 
+    @ManyToMany
+    @JoinTable (
+        name = "followerToFollowees",
+        joinColumns = {@JoinColumn(name = "userWhoIsFollowing")},
+        inverseJoinColumns = {@JoinColumn(name = "FollowedUser")}
+    )
+    Set<SiteUser> usersIFollow = new HashSet<>();
+
+    @ManyToMany(mappedBy = "usersIFollow")
+    Set<SiteUser> usersWhoFollowMe = new HashSet<>();
+
+
+
+    public Set<SiteUser> getUsersIFollow() {
+        return usersIFollow;
+    }
+
+    public Set<SiteUser> getUsersWhoFollowMe() {
+        return usersWhoFollowMe;
+    }
+
     public SiteUser() {}
 
     public SiteUser(String username, String password, String firstName, String lastName, String dateOfBirth, String bio, LocalDate dateCreated) {
@@ -33,6 +53,14 @@ public class SiteUser implements UserDetails {
         this.dateOfBirth = dateOfBirth;
         this.bio = bio;
         this.dateCreated = dateCreated;
+    }
+
+    public ArrayList<List<Post>> getUsersIFollowPosts(){
+        ArrayList<List<Post>> list = new ArrayList<>();
+        for(SiteUser followee : usersIFollow){
+            list.add(followee.posts);
+        }
+        return list;
     }
 
     public long getId() {

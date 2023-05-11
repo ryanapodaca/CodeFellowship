@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Following user Posts</h1>
+<ul>
+    <li th:each="postList : ${followingPosts}">
+        <h2 th:text="${postList[0].siteUser.username}'s Posts"></h2>
+        <ul>
+            <li th:each="post : ${postList}">
+                <p th:text="${post.body}"></p>
+            </li>
+        </ul>
+    </li>
+</ul>
+</body>
+</html>

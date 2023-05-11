@@ -56,7 +56,36 @@ public class SiteUserController {
 
 
     @GetMapping("/myprofile")
-    public String getMyProfile() { return "my-profile.html"; }
+    public String getMyProfile(Model m, Principal p) {
+        SiteUser profileUser = null;
+        if (p != null) {
+            String username = p.getName();
+            profileUser = siteUserRepository.findByUsername(username);
+            m.addAttribute("username", profileUser.getUsername());
+        }
+
+        m.addAttribute("profileUsername", profileUser.getUsername());
+        m.addAttribute("firstName", profileUser.getFirstName());
+        m.addAttribute("lastName", profileUser.getLastName());
+        m.addAttribute("profileId", profileUser.getId());
+        m.addAttribute("profileDateCreated", profileUser.getDateCreated());
+
+        return "my-profile.html";
+    }
+
+    @GetMapping("/myprofile/following")
+    public String getFollowingPosts(Model m, Principal p){
+        SiteUser profileUser = null;
+        if (p != null) {
+            String username = p.getName();
+            profileUser = siteUserRepository.findByUsername(username);
+            m.addAttribute("username", profileUser.getUsername());
+            m.addAttribute("followingPosts", profileUser.getUsersIFollowPosts());
+        }
+
+
+        return "following-posts.html";
+    }
 
     @PostMapping("/signup")
     public RedirectView createUser(String username, String password) {
@@ -73,6 +102,7 @@ public class SiteUserController {
 
         return new RedirectView("/");
     }
+
 
     public void authWithHttpServletRequest (String username, String password) {
         try {
@@ -105,6 +135,8 @@ public class SiteUserController {
 
         SiteUser profileUser = siteUserRepository.findById(id).orElseThrow();
         m.addAttribute("profileUsername", profileUser.getUsername());
+        m.addAttribute("firstName", profileUser.getFirstName());
+        m.addAttribute("lastName", profileUser.getLastName());
         m.addAttribute("profileId",profileUser.getId());
         m.addAttribute("profileDateCreated", profileUser.getDateCreated());
 
@@ -130,6 +162,28 @@ public class SiteUserController {
 
         return new RedirectView("/user/"+id);
     }
+
+    @PutMapping("/follow-user/{id}")
+    public RedirectView followUser(Principal p, @PathVariable Long id) {
+        SiteUser userToFollow = siteUserRepository.findById(id).orElseThrow();
+
+        SiteUser browsingUser = siteUserRepository.findByUsername(p.getName());
+
+        //ensures user isn't following themselves
+        if (browsingUser.getUsername().equals(userToFollow.getUsername()))
+            throw new IllegalArgumentException("Cannot follow yourself!");
+
+
+        // accesses followers from browsingUser and updates with new userToFollow
+        browsingUser.getUsersIFollow().add(userToFollow);
+
+        siteUserRepository.save(browsingUser);
+
+        return new RedirectView("/user/" + id);
+
+    }
+
+
 
     @DeleteMapping("/user/{id}")
     public RedirectView deleteUser(@PathVariable Long id, Principal p, RedirectAttributes redir) {
